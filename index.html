@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Download VisiLean LiveSite</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #16325B 0%, #6495C7 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+        .container { max-width: 400px; }
+        .logo { width: 80px; height: 80px; margin: 0 auto 20px; }
+        h1 { font-size: 28px; margin-bottom: 8px; }
+        p { font-size: 16px; opacity: 0.9; margin-bottom: 24px; }
+        .spinner {
+            width: 36px; height: 36px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .status { font-size: 14px; opacity: 0.8; margin-bottom: 24px; }
+        .buttons { display: flex; flex-direction: column; gap: 12px; }
+        .btn {
+            display: block; padding: 14px 24px; border-radius: 12px;
+            text-decoration: none; font-size: 16px; font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .btn:hover { transform: scale(1.03); }
+        .btn-primary { background: white; color: #16325B; }
+        .btn-secondary { background: rgba(255,255,255,0.15); color: white; border: 2px solid white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>VisiLean LiveSite</h1>
+        <p>Construction field management</p>
+        <div class="spinner" id="spinner"></div>
+        <p class="status" id="status">Redirecting to your app store...</p>
+        <div class="buttons" id="buttons" style="display:none;">
+            <a href="https://apps.apple.com/us/app/visilean-livesite/id1533646047"
+               class="btn btn-primary" id="btn-ios">Download on App Store</a>
+            <a href="https://play.google.com/store/apps/details?id=com.visilean.livesite"
+               class="btn btn-secondary" id="btn-android">Get it on Google Play</a>
+        </div>
+    </div>
+    <script>
+        (function() {
+            var ua = navigator.userAgent || navigator.vendor || window.opera;
+            var isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            var isAndroid = /android/i.test(ua);
+
+            var appStore = "https://apps.apple.com/us/app/visilean-livesite/id1533646047";
+            var playStore = "https://play.google.com/store/apps/details?id=com.visilean.livesite";
+
+            // Android: use intent to try app first, fallback to Play Store
+            var androidIntent = "intent://livesite#Intent;" +
+                "package=com.visilean.livesite;" +
+                "scheme=visilean;" +
+                "S.browser_fallback_url=" + encodeURIComponent(playStore) + ";end";
+
+            if (isIOS) {
+                // iOS: try universal link / custom scheme, then App Store
+                document.getElementById("status").textContent = "Opening App Store...";
+                setTimeout(function() { window.location.href = appStore; }, 300);
+            } else if (isAndroid) {
+                // Android: intent tries app first, auto-falls back to Play Store
+                document.getElementById("status").textContent = "Opening Play Store...";
+                setTimeout(function() { window.location.href = androidIntent; }, 300);
+            } else {
+                // Desktop / unknown: show buttons
+                document.getElementById("spinner").style.display = "none";
+                document.getElementById("status").textContent = "Choose your platform:";
+                document.getElementById("buttons").style.display = "flex";
+            }
+
+            // Fallback: show buttons if redirect didn't work after 4s
+            setTimeout(function() {
+                document.getElementById("spinner").style.display = "none";
+                document.getElementById("buttons").style.display = "flex";
+                if (isIOS) {
+                    document.getElementById("btn-ios").className = "btn btn-primary";
+                    document.getElementById("btn-android").className = "btn btn-secondary";
+                } else if (isAndroid) {
+                    document.getElementById("btn-android").className = "btn btn-primary";
+                    document.getElementById("btn-ios").className = "btn btn-secondary";
+                }
+            }, 4000);
+        })();
+    </script>
+</body>
+</html>
